@@ -44,7 +44,9 @@ with dpg.window(label="Team Names", width=408, height=300, pos=[2107, 0],
     team1_name_input = dpg.add_input_text(hint="Team 1", callback=rename, user_data=1)
     team2_name_input = dpg.add_input_text(hint="Team 2", callback=rename, user_data=2)
 
-dpg.bind_font(space_mono_bold)
+dpg.bind_font(space_mono_regular)
+dpg.bind_item_font(scoreboard, space_mono_bold)
+dpg.bind_item_font(naming, space_mono_italic)
 
 dpg.create_viewport(title='PyScore - Scorekeeping', width=2560, height=300)
 dpg.setup_dearpygui()

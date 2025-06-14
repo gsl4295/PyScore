@@ -1,55 +1,120 @@
 import dearpygui.dearpygui as dpg
 
-dpg.create_context()
+class GUIManager:
+    def __init__(self):
+        self.width = 2000
+        self.height = 500
 
-def score_up(sender, app_data, user_data):
-    specifier = f"team{str(user_data)}_score"
-    current_score = int(dpg.get_value(specifier))
-    current_score += 1
-    dpg.set_value(specifier, value=current_score)
+    @staticmethod
+    def score_up(sender, app_data, user_data):
+        specifier = f"team{str(user_data)}_score"
+        current_score = int(dpg.get_value(specifier))
+        current_score += 1
+        dpg.set_value(specifier, value=current_score)
 
-def score_down(sender, app_data, user_data):
-    specifier = f"team{str(user_data)}_score"
-    current_score = int(dpg.get_value(specifier))
-    current_score -= 1
-    dpg.set_value(specifier, value=current_score)
+    @staticmethod
+    def score_down(sender, app_data, user_data):
+        specifier = f"team{str(user_data)}_score"
+        current_score = int(dpg.get_value(specifier))
+        current_score -= 1
+        dpg.set_value(specifier, value=current_score)
 
-def rename(sender, app_data, user_data: str):
-    dpg.set_value(f"team{user_data}_name", f"{app_data}")
+    @staticmethod
+    def color_picker(self, sender, app_data, user_data):
+        red = sender[0] * 255
+        green = sender[1] * 255
+        blue = sender[2] * 255
+        alpha = sender[3] * 255
 
-with dpg.font_registry():
-    space_mono_regular = dpg.add_font("fonts/SpaceMono-Regular.ttf", 30)
-    space_mono_italic = dpg.add_font("fonts/SpaceMono-Italic.ttf", 30)
-    space_mono_bold = dpg.add_font("fonts/SpaceMono-Bold.ttf", 30)
-    space_mono_bolditalic = dpg.add_font("fonts/SpaceMono-BoldItalic.ttf", 30)
+        specifier = f"team{app_data}_color_theme"
+        dpg.set_value(specifier, [red, green, blue, alpha])
 
-with dpg.window(label="Scorekeeping", width=407, height=300, pos=[0, 0],
-                no_move=True, no_resize=True, no_close=True, no_collapse=True) as scorekeeping:
-    dpg.add_button(label="Team 1 [+1]", tag="t1_score_up_button", callback=score_up, user_data=1)
-    dpg.add_button(label="Team 1 [-1]", tag="t1_score_down_button", callback=score_down, user_data=1)
-    dpg.add_separator()
-    dpg.add_button(label="Team 2 [+1]", tag="t2_score_up_button", callback=score_up, user_data=2)
-    dpg.add_button(label="Team 2 [-1]", tag="t2_score_down_button", callback=score_down, user_data=2)
+    @staticmethod
+    def rename_teams(sender, app_data, user_data: str):
+        dpg.set_value(f"team{user_data}_name", f"{app_data}")
 
-with dpg.window(label="Scoreboard", width=1700, height=300, pos=[407, 0],
-                no_move=True, no_resize=True, no_close=True, no_collapse=True) as scoreboard:
-    dpg.add_text(default_value="Team 1", tag="team1_name", color=(255, 155, 253))
-    dpg.add_text(default_value="0", tag="team1_score", color=(255, 155, 253))
-    dpg.add_separator()
-    dpg.add_text(default_value="Team 2", tag="team2_name", color=(155, 255, 231))
-    dpg.add_text(default_value="0", tag="team2_score", color=(155, 255, 231))
+    def define_fonts(self):
+        with dpg.font_registry():
+            space_mono_regular = dpg.add_font("fonts/SpaceMono-Regular.ttf", 30)
+            space_mono_italic = dpg.add_font("fonts/SpaceMono-Italic.ttf", 30)
+            space_mono_bold = dpg.add_font("fonts/SpaceMono-Bold.ttf", 30)
+            space_mono_bolditalic = dpg.add_font("fonts/SpaceMono-BoldItalic.ttf", 30)
 
-with dpg.window(label="Team Names", width=408, height=300, pos=[2107, 0],
-                no_move=True, no_resize=True, no_close=True, no_collapse=True) as naming:
-    team1_name_input = dpg.add_input_text(hint="Team 1", callback=rename, user_data=1)
-    team2_name_input = dpg.add_input_text(hint="Team 2", callback=rename, user_data=2)
+            dpg.bind_font(space_mono_regular)
+            dpg.bind_item_font(self.scoreboard, space_mono_bold)
 
-dpg.bind_font(space_mono_regular)
-dpg.bind_item_font(scoreboard, space_mono_bold)
-dpg.bind_item_font(naming, space_mono_italic)
+    def define_themes(self):
+        with dpg.theme() as main_theme:
+            with dpg.theme_component(dpg.mvAll):
+                dpg.add_theme_color(dpg.mvThemeCol_Text, [255, 255, 255, 255], category=dpg.mvThemeCat_Core)
+                dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvAll)
+                dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 8, category=dpg.mvAll)
 
-dpg.create_viewport(title='PyScore - Scorekeeping', width=2560, height=300)
-dpg.setup_dearpygui()
-dpg.show_viewport()
-dpg.start_dearpygui()
-dpg.destroy_context()
+        dpg.bind_theme(main_theme)
+
+        with dpg.theme() as team_1_color:
+            with dpg.theme_component(dpg.mvAll):
+                dpg.add_theme_color(dpg.mvThemeCol_Text, [255, 255, 255, 255], category=dpg.mvThemeCat_Core, tag="team1_color_theme")
+
+        dpg.bind_item_theme("team1_name", team_1_color)
+        dpg.bind_item_theme("team1_score", team_1_color)
+
+        with dpg.theme() as team_2_color:
+            with dpg.theme_component(dpg.mvAll):
+                dpg.add_theme_color(dpg.mvThemeCol_Text, [255, 255, 255, 255], category=dpg.mvThemeCat_Core, tag="team2_color_theme")
+
+        dpg.bind_item_theme("team2_name", team_2_color)
+        dpg.bind_item_theme("team2_score", team_2_color)
+
+        with dpg.theme() as up_button_theme:
+            with dpg.theme_component(dpg.mvAll):
+                dpg.add_theme_color(dpg.mvThemeCol_Button, value=[0, 130, 0, 255], category=dpg.mvThemeCat_Core)
+
+        dpg.bind_item_theme("t1_score_up_button", up_button_theme)
+        dpg.bind_item_theme("t2_score_up_button", up_button_theme)
+
+        with dpg.theme() as down_button_theme:
+            with dpg.theme_component(dpg.mvAll):
+                dpg.add_theme_color(dpg.mvThemeCol_Button, value=[130, 0, 0, 255], category=dpg.mvThemeCat_Core)
+
+        dpg.bind_item_theme("t1_score_down_button", down_button_theme)
+        dpg.bind_item_theme("t2_score_down_button", down_button_theme)
+
+    def window_manager(self):
+        with dpg.window(label="Team 1 Settings", width=int(self.width / 5), height=self.height, pos=[0, 0],
+                        no_move=True, no_resize=True, no_close=True, no_collapse=True) as self.t1_settings:
+            dpg.add_button(label="Team 1 [+1]", tag="t1_score_up_button", callback=self.score_up, user_data=1)
+            dpg.add_button(label="Team 1 [-1]", tag="t1_score_down_button", callback=self.score_down, user_data=1)
+            dpg.add_input_text(hint="Rename...", tag="t1_rename", callback=self.rename_teams, user_data=1)
+            dpg.add_color_edit(tag="t1_color_picker", default_value=[255, 255, 255, 255], callback=self.color_picker, user_data=1)
+
+        with dpg.window(label="Scoreboard", width=int((self.width / 5) * 3), height=self.height, pos=[int(self.width / 5), 0],
+                        no_move=True, no_resize=True, no_close=True, no_collapse=True, ) as self.scoreboard:
+            dpg.add_text(default_value="Team 1", tag="team1_name")
+            dpg.add_text(default_value="0", tag="team1_score")
+            dpg.add_text(default_value="Team 2", tag="team2_name")
+            dpg.add_text(default_value="0", tag="team2_score")
+
+        with dpg.window(label="Team 2 Settings", width=int(self.width / 5), height=self.height, pos=[int((self.width / 5) * 4), 0],
+                        no_move=True, no_resize=True, no_close=True, no_collapse=True) as self.t2_settings:
+            dpg.add_button(label="Team 2 [+1]", tag="t2_score_up_button", callback=self.score_up, user_data=2)
+            dpg.add_button(label="Team 2 [-1]", tag="t2_score_down_button", callback=self.score_down, user_data=2)
+            dpg.add_input_text(hint="Rename...", tag="t2_rename", callback=self.rename_teams, user_data=2)
+            dpg.add_color_edit(tag="t2_color_picker", default_value=[255, 255, 255, 255], callback=self.color_picker, user_data=2)
+
+    def main_loop(self):
+        dpg.create_context() # Start the main GUI process
+
+        self.window_manager() # Actually create the windows, buttons, etc.
+        self.define_fonts() # Load different fonts
+        self.define_themes() # Use custom-made themes
+
+        dpg.create_viewport(title='PyScore - Scorekeeping', width=self.width, height=self.height)
+        dpg.setup_dearpygui()
+        dpg.show_viewport()
+        dpg.start_dearpygui()
+        dpg.destroy_context()
+
+if __name__ == "__main__":
+    manager = GUIManager()
+    manager.main_loop()

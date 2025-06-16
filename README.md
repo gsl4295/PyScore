@@ -12,8 +12,15 @@ Simple python-powered scoreboard for use with my online webcasts.
   - Team colors
   - Score
     - +1, -1, or by text input
+
+| Hotkeys  | Team 1  | Team 2  |
+|:--------:|:-------:|:-------:|
+| Score +1 | numpad7 | numpad9 |
+| Score -1 | numpad1 | numpad3 |
+
 - Streaming-friendly output section
-  - BG hexadecimal (for color key): #252526
+  - Background (for using color key): #252526
+  - Find an example of how I'm using this program in `images/OBS-overlay-example.png`
 
 ### Setup
 - My setup uses the `space_mono` font family. If you want to replicate the image above,

@@ -151,7 +151,7 @@ class GUIManager:
 
     def window_manager(self):
         """
-        Creates all items.
+        Creates all GUI items.
         :return: None
         """
         # This first window is a parent to four items, all associated with Team 1's settings.
@@ -187,6 +187,10 @@ class GUIManager:
                 dpg.add_text(default_value="Team 2", tag="team2_name")
 
     def keyboard_manager(self):
+        """
+        Creates a registry that listens for all keyboard inputs
+        :return: None
+        """
         with dpg.handler_registry():
             dpg.add_key_press_handler(key=dpg.mvKey_NumPad7, callback=self.score_up, user_data=1)
             dpg.add_key_press_handler(key=dpg.mvKey_NumPad1, callback=self.score_down, user_data=1)
@@ -197,14 +201,14 @@ class GUIManager:
     def main_loop(self):
         dpg.create_context() # Start the main GUI process
 
-        self.window_manager() # Actually create the windows, buttons, etc.
-        self.define_fonts() # Load different fonts
-        self.define_themes() # Use custom-made themes
-        self.keyboard_manager() # Start listening for keyboard inputs
+        self.window_manager()
+        self.define_fonts()
+        self.define_themes()
+        self.keyboard_manager()
         self.color_picker(sender="", app_data=self.color_white, user_data=1) # Use initial color scheme already
         self.color_picker(sender="", app_data=self.color_white, user_data=2) # loaded onto the color pickers
 
-        dpg.create_viewport(title='PyScore - Scorekeeping', width=self.width, height=self.height)
+        dpg.create_viewport(title='Scoreboard', width=self.width, height=self.height)
         dpg.setup_dearpygui()
         dpg.show_viewport()
         dpg.start_dearpygui()

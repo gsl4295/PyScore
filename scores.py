@@ -12,8 +12,7 @@ class GUIManager:
         self.color_white = [255, 255, 255, 255]
         self.alignment_width = 16
 
-    @staticmethod
-    def score_up(sender, app_data, user_data):
+    def score_up(self, sender, app_data, user_data):
         """
         Adds 1 to a team's score.
         :param sender:
@@ -28,9 +27,9 @@ class GUIManager:
             current_score = 0
         current_score += 1
         dpg.set_value(specifier, value=current_score)
+        self.scores_to_file(sender, current_score, user_data)
 
-    @staticmethod
-    def score_down(sender, app_data, user_data):
+    def score_down(self, sender, app_data, user_data):
         """
         Subtracts 1 from a team's score.
         :param sender:
@@ -45,9 +44,9 @@ class GUIManager:
             current_score = 0
         current_score -= 1
         dpg.set_value(specifier, value=current_score)
+        self.scores_to_file(sender, current_score, user_data)
 
-    @staticmethod
-    def set_score(sender, app_data, user_data):
+    def set_score(self, sender, app_data, user_data):
         """
         Sets a team's score to a text input
         :param sender:
@@ -61,6 +60,7 @@ class GUIManager:
         except ValueError:
             current_score = 0
         dpg.set_value(specifier, current_score)
+        self.scores_to_file(sender, app_data, user_data)
 
     @staticmethod
     def color_picker(sender, app_data, user_data):
@@ -92,6 +92,34 @@ class GUIManager:
             app_data = f"Team {user_data}"
         dpg.set_value(f"team{user_data}_name", f"{app_data}")
 
+    def names_to_file(self, sender, app_data, user_data):
+        """
+        Writes the input from a renaming teams text_input item to a specific file for OBS purposes
+        :param sender:
+        :param app_data:
+        :param user_data:
+        :return: None
+        """
+        self.rename_teams(sender, app_data, user_data)
+        filename = f"outputs/t{user_data}_name.txt"
+        with open(filename, "w") as file:
+            file.write(str(app_data))
+
+    @staticmethod
+    def scores_to_file(sender, app_data, user_data):
+        """
+        Writes the input from a set_score text_input item to a specific file for OBS purposes
+        :param sender:
+        :param app_data:
+        :param user_data:
+        :return: None
+        """
+        if app_data is None:
+            app_data = 0
+        filename = f"outputs/t{user_data}_score.txt"
+        with open(filename, "w") as file:
+            file.write(str(app_data))
+
     @staticmethod
     def define_fonts():
         """
@@ -101,13 +129,12 @@ class GUIManager:
         with dpg.font_registry():
             space_mono_regular = dpg.add_font("fonts/SpaceMono-Regular.ttf", 30)
             space_mono_scoreboard_scale = dpg.add_font("fonts/SpaceMono-Bold.ttf", size=100)
-            #space_mono_italic = dpg.add_font("fonts/SpaceMono-Italic.ttf", 30)
-            #space_mono_bold = dpg.add_font("fonts/SpaceMono-Bold.ttf", 30)
-            #space_mono_bolditalic = dpg.add_font("fonts/SpaceMono-BoldItalic.ttf", 30)
 
             dpg.bind_font(space_mono_regular)
-            dpg.bind_item_font("team1_scoreboard", space_mono_scoreboard_scale)
-            dpg.bind_item_font("team2_scoreboard", space_mono_scoreboard_scale)
+            dpg.bind_item_font("team1_name", space_mono_scoreboard_scale)
+            dpg.bind_item_font("team1_score", space_mono_scoreboard_scale)
+            dpg.bind_item_font("team2_name", space_mono_scoreboard_scale)
+            dpg.bind_item_font("team2_score", space_mono_scoreboard_scale)
 
     def define_themes(self):
         """
@@ -155,36 +182,45 @@ class GUIManager:
         :return: None
         """
         # This first window is a parent to four items, all associated with Team 1's settings.
-        with dpg.window(label="Team 1 Settings", width=self.window_width, height=self.settings_height, pos=[0, self.scoreboard_height],
-                        no_move=True, no_resize=True, no_close=True, no_collapse=True) as self.t1_settings:
+        with dpg.window(
+            label="Team 1 Settings", width=self.window_width, height=self.settings_height, pos=[0, self.scoreboard_height],
+            no_move=True, no_resize=True, no_close=True, no_collapse=True
+        ) as self.t1_settings:
             dpg.add_button(label="Team 1 [+1]", tag="t1_score_up_button", callback=self.score_up, user_data=1)
             dpg.add_button(label="Team 1 [-1]", tag="t1_score_down_button", callback=self.score_down, user_data=1)
             dpg.add_input_text(hint="Set score...", tag="t1_set_score", callback=self.set_score, user_data=1)
-            dpg.add_input_text(hint="Rename...", tag="t1_rename", callback=self.rename_teams, user_data=1)
+            dpg.add_input_text(hint="Rename...", tag="t1_rename", callback=self.names_to_file, user_data=1)
             dpg.add_color_edit(tag="t1_color_picker", default_value=self.color_white, callback=self.color_picker, user_data=1)
 
         # Note the "callback=" argument. This has the button call a function to do whatever you want in the
         # background along with some optional user_data.
-        with dpg.window(label="Team 2 Settings", width=self.window_width, height=self.settings_height, pos=[self.window_width, self.scoreboard_height],
-                        no_move=True, no_resize=True, no_close=True, no_collapse=True) as self.t2_settings:
+        with dpg.window(
+                label="Team 2 Settings", width=self.window_width, height=self.settings_height, pos=[self.window_width, self.scoreboard_height],
+                no_move=True, no_resize=True, no_close=True, no_collapse=True
+        ) as self.t2_settings:
             dpg.add_button(label="Team 2 [+1]", tag="t2_score_up_button", callback=self.score_up, user_data=2)
             dpg.add_button(label="Team 2 [-1]", tag="t2_score_down_button", callback=self.score_down, user_data=2)
             dpg.add_input_text(hint="Set score...", tag="t2_set_score", callback=self.set_score, user_data=2)
-            dpg.add_input_text(hint="Rename...", tag="t2_rename", callback=self.rename_teams, user_data=2)
+            dpg.add_input_text(hint="Rename...", tag="t2_rename", callback=self.names_to_file, user_data=2)
             dpg.add_color_edit(tag="t2_color_picker", default_value=self.color_white, callback=self.color_picker, user_data=2)
 
-        with dpg.window(label="Scoreboard", width=self.width, height=self.scoreboard_height, pos=[0, 0],
-                        no_move=True, no_resize=True, no_close=True, no_collapse=True, no_title_bar=True, no_scrollbar=True):
-            with dpg.group(horizontal=True, tag="team1_scoreboard") as self.team1_scores:
-                dpg.add_spacer(width=15)
-                dpg.add_text(default_value="0", tag="team1_score")
-                dpg.add_text(default_value=" - ")
-                dpg.add_text(default_value="Team 1", tag="team1_name")
-            with dpg.group(horizontal=True, tag="team2_scoreboard") as self.team2_scores:
-                dpg.add_spacer(width=15)
-                dpg.add_text(default_value="0", tag="team2_score")
-                dpg.add_text(default_value=" - ")
-                dpg.add_text(default_value="Team 2", tag="team2_name")
+        with dpg.window(
+            label="Scoreboard", width=self.width, height=self.scoreboard_height, pos=[0, 0],
+            no_move=True, no_resize=True, no_close=True, no_collapse=True, no_title_bar=True, no_scrollbar=True
+        ):
+            with dpg.table(
+                header_row=False
+            ):
+                dpg.add_table_column(tag="Team Names")
+                dpg.add_table_column(tag="Team Scores")
+
+                with dpg.table_row(tag="Team 1 Row"):
+                    dpg.add_text(default_value="Team 1", tag="team1_name")
+                    dpg.add_text(default_value="0", tag="team1_score")
+
+                with dpg.table_row(tag="Team 2 Row"):
+                    dpg.add_text(default_value="Team 2", tag="team2_name")
+                    dpg.add_text(default_value="0", tag="team2_score")
 
     def keyboard_manager(self):
         """

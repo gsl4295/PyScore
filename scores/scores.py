@@ -1,12 +1,14 @@
 import dearpygui.dearpygui as dpg
+from pathlib import Path
 
 class GUIManager:
     def __init__(self):
-        self.width = 1920
-        self.height = 1080
+        self.width = 1200
+        self.height = 525
         self.window_width = int(self.width / 2)
-        self.scoreboard_height = int(self.height / 4)
-        self.settings_height = self.scoreboard_height * 3
+        self.button_width = int(self.window_width * 0.975)
+        self.scoreboard_height = int(self.height * 0.5)
+        self.settings_height = int(self.height * 0.5)
         self.initial_t1_color = [0, 130, 0, 255]
         self.initial_t2_color = [0, 130, 130, 255]
         self.color_white = [255, 255, 255, 255]
@@ -127,8 +129,14 @@ class GUIManager:
         :return: None
         """
         with dpg.font_registry():
-            space_mono_regular = dpg.add_font("fonts/SpaceMono-Regular.ttf", 30)
-            space_mono_scoreboard_scale = dpg.add_font("fonts/SpaceMono-Bold.ttf", size=100)
+            current_file = Path(__file__).resolve()
+            project_root = current_file.parent
+            fonts_folder = project_root / "fonts"
+            regular_font = str(fonts_folder / "SpaceMono-Regular.ttf")
+            bold_font = str(fonts_folder / "SpaceMono-Bold.ttf")
+
+            space_mono_regular = dpg.add_font(regular_font, 30)
+            space_mono_scoreboard_scale = dpg.add_font(bold_font, size=100)
 
             dpg.bind_font(space_mono_regular)
             dpg.bind_item_font("team1_name", space_mono_scoreboard_scale)
@@ -186,11 +194,11 @@ class GUIManager:
             label="Team 1 Settings", width=self.window_width, height=self.settings_height, pos=[0, self.scoreboard_height],
             no_move=True, no_resize=True, no_close=True, no_collapse=True
         ) as self.t1_settings:
-            dpg.add_button(label="Team 1 [+1]", tag="t1_score_up_button", callback=self.score_up, user_data=1)
-            dpg.add_button(label="Team 1 [-1]", tag="t1_score_down_button", callback=self.score_down, user_data=1)
-            dpg.add_input_text(hint="Set score...", tag="t1_set_score", callback=self.set_score, user_data=1)
-            dpg.add_input_text(hint="Rename...", tag="t1_rename", callback=self.names_to_file, user_data=1)
-            dpg.add_color_edit(tag="t1_color_picker", default_value=self.color_white, callback=self.color_picker, user_data=1)
+            dpg.add_button(label="Team 1 [+1]", tag="t1_score_up_button", callback=self.score_up, user_data=1, width=self.button_width)
+            dpg.add_button(label="Team 1 [-1]", tag="t1_score_down_button", callback=self.score_down, user_data=1, width=self.button_width)
+            dpg.add_input_text(hint="Set score...", tag="t1_set_score", callback=self.set_score, user_data=1, width=self.button_width)
+            dpg.add_input_text(hint="Rename...", tag="t1_rename", callback=self.names_to_file, user_data=1, width=self.button_width)
+            dpg.add_color_edit(tag="t1_color_picker", default_value=self.color_white, callback=self.color_picker, user_data=1, width=self.button_width)
 
         # Note the "callback=" argument. This has the button call a function to do whatever you want in the
         # background along with some optional user_data.
@@ -198,11 +206,11 @@ class GUIManager:
                 label="Team 2 Settings", width=self.window_width, height=self.settings_height, pos=[self.window_width, self.scoreboard_height],
                 no_move=True, no_resize=True, no_close=True, no_collapse=True
         ) as self.t2_settings:
-            dpg.add_button(label="Team 2 [+1]", tag="t2_score_up_button", callback=self.score_up, user_data=2)
-            dpg.add_button(label="Team 2 [-1]", tag="t2_score_down_button", callback=self.score_down, user_data=2)
-            dpg.add_input_text(hint="Set score...", tag="t2_set_score", callback=self.set_score, user_data=2)
-            dpg.add_input_text(hint="Rename...", tag="t2_rename", callback=self.names_to_file, user_data=2)
-            dpg.add_color_edit(tag="t2_color_picker", default_value=self.color_white, callback=self.color_picker, user_data=2)
+            dpg.add_button(label="Team 2 [+1]", tag="t2_score_up_button", callback=self.score_up, user_data=2, width=self.button_width)
+            dpg.add_button(label="Team 2 [-1]", tag="t2_score_down_button", callback=self.score_down, user_data=2, width=self.button_width)
+            dpg.add_input_text(hint="Set score...", tag="t2_set_score", callback=self.set_score, user_data=2, width=self.button_width)
+            dpg.add_input_text(hint="Rename...", tag="t2_rename", callback=self.names_to_file, user_data=2, width=self.button_width)
+            dpg.add_color_edit(tag="t2_color_picker", default_value=self.color_white, callback=self.color_picker, user_data=2, width=self.button_width)
 
         with dpg.window(
             label="Scoreboard", width=self.width, height=self.scoreboard_height, pos=[0, 0],
@@ -250,6 +258,9 @@ class GUIManager:
         dpg.start_dearpygui()
         dpg.destroy_context()
 
-if __name__ == "__main__":
+def main():
     manager = GUIManager()
     manager.main_loop()
+
+if __name__ == "__main__":
+    main()

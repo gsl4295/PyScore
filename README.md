@@ -1,4 +1,4 @@
-# scores
+# obs-scoreboard
 ![GitHub Release #](https://img.shields.io/github/v/release/gsl4295/scores?include_prereleases&sort=date&display_name=tag)
 ![GitHub Commits](https://img.shields.io/github/commit-activity/t/gsl4295/scores)
 ![GitHub Issues](https://img.shields.io/github/issues/gsl4295/scores)<br>
@@ -7,9 +7,10 @@ Simple python-powered scoreboard for use with my online webcasts.
 <img src="/images/GUI.png" width=500 /><br>
 
 ### Setup
-- My setup uses the `space_mono` font family. If you want to replicate the image above,
-  - Download it [here](https://fonts.google.com/specimen/Space+Mono) on Google Fonts.
-  - Then, move the .ttf files over into a new `fonts/` directory at the root of this project.
+- This program is available on pip:
+```commandline
+pip install obs-scoreboard
+```
 
 ### Features
 - User-inputted:

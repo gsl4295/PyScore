@@ -4,7 +4,7 @@
 ![GitHub Issues](https://img.shields.io/github/issues/gsl4295/scores)<br>
 Simple python-powered scoreboard for use with my online webcasts.
 
-<img src="/images/GUI.png" width=500 /><br>
+<img src="scores/images/GUI.png" width=500 /><br>
 
 ### Setup
 - This program is available on pip:
